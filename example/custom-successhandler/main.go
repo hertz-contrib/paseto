@@ -27,6 +27,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app/client"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/cloudwego/hertz/pkg/common/utils"
 	"github.com/cloudwego/hertz/pkg/protocol"
 	"github.com/hertz-contrib/paseto"
 )
@@ -75,7 +76,7 @@ func main() {
 			ExpiredAt: now.Add(time.Hour),
 			NotBefore: now,
 			IssuedAt:  now,
-		}, map[string]interface{}{
+		}, utils.H{
 			"secret1": "answer1",
 		}, nil)
 		if err != nil {

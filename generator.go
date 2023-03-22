@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"aidanwoods.dev/go-paseto"
+	"github.com/cloudwego/hertz/pkg/common/utils"
 )
 
 type StandardClaims struct {
@@ -33,14 +34,14 @@ type StandardClaims struct {
 	IssuedAt  time.Time
 }
 
-type GenTokenFunc func(stdClaims *StandardClaims, customClaims map[string]interface{}, footer []byte) (token string, err error)
+type GenTokenFunc func(stdClaims *StandardClaims, customClaims utils.H, footer []byte) (token string, err error)
 
 func NewV2EncryptFunc(symmetricKey string) (GenTokenFunc, error) {
 	key, err := paseto.V2SymmetricKeyFromHex(symmetricKey)
 	if err != nil {
 		return nil, err
 	}
-	return func(stdClaims *StandardClaims, customClaims map[string]interface{}, footer []byte) (token string, err error) {
+	return func(stdClaims *StandardClaims, customClaims utils.H, footer []byte) (token string, err error) {
 		if tk, err := newTokenFromClaims(stdClaims, customClaims, footer); err != nil {
 			return "", err
 		} else {
@@ -54,7 +55,7 @@ func NewV2SignFunc(asymmetricKey string) (GenTokenFunc, error) {
 	if err != nil {
 		return nil, err
 	}
-	return func(stdClaims *StandardClaims, customClaims map[string]interface{}, footer []byte) (string, error) {
+	return func(stdClaims *StandardClaims, customClaims utils.H, footer []byte) (string, error) {
 		if tk, err := newTokenFromClaims(stdClaims, customClaims, footer); err != nil {
 			return "", err
 		} else {
@@ -68,7 +69,7 @@ func NewV3EncryptFunc(symmetricKey string, implicit []byte) (GenTokenFunc, error
 	if err != nil {
 		return nil, err
 	}
-	return func(stdClaims *StandardClaims, customClaims map[string]interface{}, footer []byte) (token string, err error) {
+	return func(stdClaims *StandardClaims, customClaims utils.H, footer []byte) (token string, err error) {
 		if tk, err := newTokenFromClaims(stdClaims, customClaims, footer); err != nil {
 			return "", err
 		} else {
@@ -82,7 +83,7 @@ func NewV3SignFunc(asymmetricKey string, implicit []byte) (GenTokenFunc, error) 
 	if err != nil {
 		return nil, err
 	}
-	return func(stdClaims *StandardClaims, customClaims map[string]interface{}, footer []byte) (string, error) {
+	return func(stdClaims *StandardClaims, customClaims utils.H, footer []byte) (string, error) {
 		if tk, err := newTokenFromClaims(stdClaims, customClaims, footer); err != nil {
 			return "", err
 		} else {
@@ -96,7 +97,7 @@ func NewV4EncryptFunc(symmetricKey string, implicit []byte) (GenTokenFunc, error
 	if err != nil {
 		return nil, err
 	}
-	return func(stdClaims *StandardClaims, customClaims map[string]interface{}, footer []byte) (token string, err error) {
+	return func(stdClaims *StandardClaims, customClaims utils.H, footer []byte) (token string, err error) {
 		if tk, err := newTokenFromClaims(stdClaims, customClaims, footer); err != nil {
 			return "", err
 		} else {
@@ -110,7 +111,7 @@ func NewV4SignFunc(asymmetricKey string, implicit []byte) (GenTokenFunc, error) 
 	if err != nil {
 		return nil, err
 	}
-	return func(stdClaims *StandardClaims, customClaims map[string]interface{}, footer []byte) (string, error) {
+	return func(stdClaims *StandardClaims, customClaims utils.H, footer []byte) (string, error) {
 		if tk, err := newTokenFromClaims(stdClaims, customClaims, footer); err != nil {
 			return "", err
 		} else {
@@ -119,7 +120,7 @@ func NewV4SignFunc(asymmetricKey string, implicit []byte) (GenTokenFunc, error) 
 	}, nil
 }
 
-func newTokenFromClaims(stdClaims *StandardClaims, customClaims map[string]interface{}, footer []byte) (token *paseto.Token, err error) {
+func newTokenFromClaims(stdClaims *StandardClaims, customClaims utils.H, footer []byte) (token *paseto.Token, err error) {
 	if token, err = paseto.MakeToken(customClaims, footer); err != nil {
 		return nil, err
 	}
