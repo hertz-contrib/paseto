@@ -32,8 +32,10 @@ var (
 	errMissingCookie = errors.New("[PASETO] missing token in cookie")
 )
 
+// Extractor defines the function to get token from app.Request Context
 type Extractor func(c *app.RequestContext) (string, error)
 
+// NewExtractor creates an Extractor based on keyLookup.
 func NewExtractor(keyLookup string) (Extractor, error) {
 	selectors := strings.Split(keyLookup, ":")
 	if len(selectors) != 2 {

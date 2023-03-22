@@ -34,8 +34,10 @@ type StandardClaims struct {
 	IssuedAt  time.Time
 }
 
+// GenTokenFunc defines the function which generates token.
 type GenTokenFunc func(stdClaims *StandardClaims, customClaims utils.H, footer []byte) (token string, err error)
 
+// NewV2EncryptFunc returns a GenTokenFunc which generates v2 local paseto.
 func NewV2EncryptFunc(symmetricKey string) (GenTokenFunc, error) {
 	key, err := paseto.V2SymmetricKeyFromHex(symmetricKey)
 	if err != nil {
@@ -50,6 +52,7 @@ func NewV2EncryptFunc(symmetricKey string) (GenTokenFunc, error) {
 	}, nil
 }
 
+// NewV2SignFunc returns a GenTokenFunc which generates v2 public paseto.
 func NewV2SignFunc(asymmetricKey string) (GenTokenFunc, error) {
 	key, err := paseto.NewV2AsymmetricSecretKeyFromHex(asymmetricKey)
 	if err != nil {
@@ -64,6 +67,7 @@ func NewV2SignFunc(asymmetricKey string) (GenTokenFunc, error) {
 	}, nil
 }
 
+// NewV3EncryptFunc returns a GenTokenFunc which generates v3 local paseto.
 func NewV3EncryptFunc(symmetricKey string, implicit []byte) (GenTokenFunc, error) {
 	key, err := paseto.V3SymmetricKeyFromHex(symmetricKey)
 	if err != nil {
@@ -78,6 +82,7 @@ func NewV3EncryptFunc(symmetricKey string, implicit []byte) (GenTokenFunc, error
 	}, nil
 }
 
+// NewV3SignFunc returns a GenTokenFunc which generates v3 public paseto.
 func NewV3SignFunc(asymmetricKey string, implicit []byte) (GenTokenFunc, error) {
 	key, err := paseto.NewV3AsymmetricSecretKeyFromHex(asymmetricKey)
 	if err != nil {
@@ -92,6 +97,7 @@ func NewV3SignFunc(asymmetricKey string, implicit []byte) (GenTokenFunc, error) 
 	}, nil
 }
 
+// NewV4EncryptFunc returns a GenTokenFunc which generates v4 local paseto.
 func NewV4EncryptFunc(symmetricKey string, implicit []byte) (GenTokenFunc, error) {
 	key, err := paseto.V4SymmetricKeyFromHex(symmetricKey)
 	if err != nil {
@@ -106,6 +112,7 @@ func NewV4EncryptFunc(symmetricKey string, implicit []byte) (GenTokenFunc, error
 	}, nil
 }
 
+// NewV4SignFunc returns a GenTokenFunc which generates v4 public paseto.
 func NewV4SignFunc(asymmetricKey string, implicit []byte) (GenTokenFunc, error) {
 	key, err := paseto.NewV4AsymmetricSecretKeyFromHex(asymmetricKey)
 	if err != nil {
@@ -159,6 +166,7 @@ func newTokenFromClaims(stdClaims *StandardClaims, customClaims utils.H, footer 
 	return
 }
 
+// DefaultGenTokenFunc returns default GenTokenFunc which creates v4 public paseto.
 func DefaultGenTokenFunc() GenTokenFunc {
 	f, _ := NewV4SignFunc(DefaultPrivateKey, []byte(DefaultImplicit))
 	return f

@@ -26,6 +26,7 @@ import (
 
 var errWrongTokenPrefix = errors.New("wrong prefix for PASETO token")
 
+// New returns a paseto middleware.
 func New(opts ...Option) app.HandlerFunc {
 	options := NewOptions(opts...)
 	extractor, err := NewExtractor(options.KeyLookup)
