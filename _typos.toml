@@ -2,3 +2,7 @@
 
 [files]
 extend-exclude = ["go.sum", "check_branch_name.sh"]
+
+
+[default.extend-identifiers]
+paseto = "paseto"
