@@ -9,7 +9,7 @@ This is the PASETO middleware for [Hertz](https://github.com/cloudwego/hertz) fr
 **Install**
 
 ```sh
-go get github.com/hertz-contrib/jwt
+go get github.com/hertz-contrib/paseto
 ```
 
 **Import**
