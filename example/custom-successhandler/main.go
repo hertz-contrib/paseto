@@ -60,7 +60,7 @@ func performRequest() {
 func main() {
 	h := server.New(server.WithHostPorts(":8080"))
 
-	hander := func(ctx context.Context, c *app.RequestContext, token *gpaseto.Token) {
+	handler := func(ctx context.Context, c *app.RequestContext, token *gpaseto.Token) {
 		var answer string
 		if err := token.Get("secret1", &answer); err != nil {
 			c.String(http.StatusBadRequest, "you don't not the answer of secret1")
@@ -99,7 +99,7 @@ func main() {
 		ctx.String(http.StatusOK, token)
 	})
 
-	h.POST("/paseto", paseto.New(paseto.WithSuccessHandler(hander)), func(c context.Context, ctx *app.RequestContext) {
+	h.POST("/paseto", paseto.New(paseto.WithSuccessHandler(handler)), func(c context.Context, ctx *app.RequestContext) {
 		ctx.String(http.StatusOK, "token is valid")
 	})
 
