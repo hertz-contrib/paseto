@@ -19,7 +19,6 @@ package paseto
 import (
 	"bytes"
 	"context"
-	"net/http"
 	"testing"
 	"time"
 
@@ -28,6 +27,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/test/assert"
 	"github.com/cloudwego/hertz/pkg/common/ut"
+	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/cloudwego/hertz/pkg/route"
 )
 
@@ -66,13 +66,13 @@ func TestDefault(t *testing.T) {
 		Key:   "Authorization",
 		Value: testV4PublicToken,
 	}).Result()
-	assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+	assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 
 	resp2 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 		Key:   "Authorization",
 		Value: testV4PublicToken + "bad",
 	}).Result()
-	assert.DeepEqual(t, http.StatusUnauthorized, resp2.StatusCode())
+	assert.DeepEqual(t, consts.StatusUnauthorized, resp2.StatusCode())
 }
 
 func TestWithKeyLookUp(t *testing.T) {
@@ -85,9 +85,9 @@ func TestWithKeyLookUp(t *testing.T) {
 			op: func(t *testing.T) {
 				engine := setupEngine("/:paseto", New(WithKeyLookUp("params:paseto")))
 				resp1 := ut.PerformRequest(engine, "POST", "/"+testV4PublicToken, nil).Result()
-				assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 				resp2 := ut.PerformRequest(engine, "POST", "/"+testV4PublicToken+"bad", nil).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp2.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp2.StatusCode())
 			},
 		},
 		{
@@ -101,7 +101,7 @@ func TestWithKeyLookUp(t *testing.T) {
 					Key:   "Content-Type",
 					Value: "application/x-www-form-urlencoded",
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 				resp2 := ut.PerformRequest(engine, "POST", "/paseto", &ut.Body{
 					Body: bytes.NewBufferString("Authorization=" + testV4PublicToken + "bad"),
 					Len:  -1,
@@ -109,7 +109,7 @@ func TestWithKeyLookUp(t *testing.T) {
 					Key:   "Content-Type",
 					Value: "application/x-www-form-urlencoded",
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp2.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp2.StatusCode())
 				resp3 := ut.PerformRequest(engine, "POST", "/paseto", &ut.Body{
 					Body: bytes.NewBufferString("paseto=" + testV4PublicToken),
 					Len:  -1,
@@ -117,7 +117,7 @@ func TestWithKeyLookUp(t *testing.T) {
 					Key:   "Content-Type",
 					Value: "application/x-www-form-urlencoded",
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp3.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp3.StatusCode())
 			},
 		},
 		{
@@ -128,17 +128,17 @@ func TestWithKeyLookUp(t *testing.T) {
 					Key:   "PASETO",
 					Value: testV4PublicToken,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 				resp2 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "PASETO",
 					Value: testV4PublicToken + "bad",
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp2.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp2.StatusCode())
 				resp3 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "TOKEN",
 					Value: testV4PublicToken,
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp3.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp3.StatusCode())
 			},
 		},
 		{
@@ -146,11 +146,11 @@ func TestWithKeyLookUp(t *testing.T) {
 			op: func(t *testing.T) {
 				engine := setupEngine("/paseto", New(WithKeyLookUp("query:Authorization")))
 				resp1 := ut.PerformRequest(engine, "POST", "/paseto?Authorization="+testV4PublicToken, nil).Result()
-				assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 				resp2 := ut.PerformRequest(engine, "POST", "/paseto?Authorization="+testV4PublicToken+"bad", nil).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp2.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp2.StatusCode())
 				resp3 := ut.PerformRequest(engine, "POST", "/paseto", nil).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp3.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp3.StatusCode())
 			},
 		},
 		{
@@ -161,14 +161,14 @@ func TestWithKeyLookUp(t *testing.T) {
 					Key:   "Cookie",
 					Value: "Authorization=" + testV4PublicToken,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 				resp2 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "Cookie",
 					Value: "Authorization=" + testV4PublicToken + "bad",
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp2.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp2.StatusCode())
 				resp3 := ut.PerformRequest(engine, "POST", "/paseto", nil).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp3.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp3.StatusCode())
 			},
 		},
 		{
@@ -195,24 +195,24 @@ func TestWithTokenPrefix(t *testing.T) {
 		Key:   "Authorization",
 		Value: "Bearer " + testV4PublicToken,
 	}).Result()
-	assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+	assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 	resp2 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 		Key:   "Authorization",
 		Value: testV4PublicToken,
 	}).Result()
-	assert.DeepEqual(t, http.StatusUnauthorized, resp2.StatusCode())
+	assert.DeepEqual(t, consts.StatusUnauthorized, resp2.StatusCode())
 }
 
 func TestWithErrorFunc(t *testing.T) {
 	customErrFunc := func(c context.Context, ctx *app.RequestContext) {
-		ctx.String(http.StatusUnauthorized, "invalid token")
+		ctx.String(consts.StatusUnauthorized, "invalid token")
 		ctx.Abort()
 	}
 
 	engine := server.Default().Engine
 
 	engine.POST("/paseto", New(WithErrorFunc(customErrFunc)), func(ctx context.Context, c *app.RequestContext) {
-		c.String(http.StatusOK, "OK")
+		c.String(consts.StatusOK, "OK")
 	})
 
 	resp1 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
@@ -225,7 +225,7 @@ func TestWithErrorFunc(t *testing.T) {
 		Value: "bad" + testV4PublicToken,
 	}).Result()
 
-	assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+	assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 	assert.DeepEqual(t, "invalid token", string(resp2.Body()))
 }
 
@@ -243,14 +243,14 @@ func TestWithNext(t *testing.T) {
 		Key:   "Authorization",
 		Value: testV4PublicToken,
 	}).Result()
-	assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+	assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 	resp2 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 		Key:   "Cookie",
 		Value: "skip=true",
 	}).Result()
-	assert.DeepEqual(t, http.StatusOK, resp2.StatusCode())
+	assert.DeepEqual(t, consts.StatusOK, resp2.StatusCode())
 	resp3 := ut.PerformRequest(engine, "POST", "/paseto", nil).Result()
-	assert.DeepEqual(t, http.StatusUnauthorized, resp3.StatusCode())
+	assert.DeepEqual(t, consts.StatusUnauthorized, resp3.StatusCode())
 }
 
 func TestWithSuccessHandler(t *testing.T) {
@@ -259,7 +259,7 @@ func TestWithSuccessHandler(t *testing.T) {
 		if issuer == "CloudWeGo" {
 			return
 		}
-		c.String(http.StatusBadRequest, "wrong issuer")
+		c.String(consts.StatusBadRequest, "wrong issuer")
 		c.Abort()
 	}
 	engine := setupEngine("/paseto", New(WithSuccessHandler(successHandler)))
@@ -279,7 +279,7 @@ func TestWithSuccessHandler(t *testing.T) {
 		Key:   "Authorization",
 		Value: token1,
 	}).Result()
-	assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+	assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 	resp2 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 		Key:   "Authorization",
 		Value: token2,
@@ -312,7 +312,7 @@ func TestAllVersion(t *testing.T) {
 					Key:   "Authorization",
 					Value: token,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp.StatusCode())
 			},
 		},
 		{
@@ -335,7 +335,7 @@ func TestAllVersion(t *testing.T) {
 					Key:   "Authorization",
 					Value: token,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp.StatusCode())
 			},
 		},
 		{
@@ -358,7 +358,7 @@ func TestAllVersion(t *testing.T) {
 					Key:   "Authorization",
 					Value: token,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp.StatusCode())
 			},
 		},
 		{
@@ -381,7 +381,7 @@ func TestAllVersion(t *testing.T) {
 					Key:   "Authorization",
 					Value: token,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp.StatusCode())
 			},
 		},
 		{
@@ -404,7 +404,7 @@ func TestAllVersion(t *testing.T) {
 					Key:   "Authorization",
 					Value: token,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp.StatusCode())
 			},
 		},
 		{
@@ -427,7 +427,7 @@ func TestAllVersion(t *testing.T) {
 					Key:   "Authorization",
 					Value: token,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp.StatusCode())
 			},
 		},
 	}
@@ -464,17 +464,17 @@ func TestParseOption(t *testing.T) {
 					Key:   "Authorization",
 					Value: token1,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 				resp2 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "Authorization",
 					Value: token2,
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp2.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp2.StatusCode())
 				resp3 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "Authorization",
 					Value: testV4PublicToken,
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp3.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp3.StatusCode())
 			},
 		},
 		{
@@ -499,17 +499,17 @@ func TestParseOption(t *testing.T) {
 					Key:   "Authorization",
 					Value: token1,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 				resp2 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "Authorization",
 					Value: token2,
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp2.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp2.StatusCode())
 				resp3 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "Authorization",
 					Value: testV4PublicToken,
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp3.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp3.StatusCode())
 			},
 		},
 		{
@@ -534,17 +534,17 @@ func TestParseOption(t *testing.T) {
 					Key:   "Authorization",
 					Value: token1,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 				resp2 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "Authorization",
 					Value: token2,
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp2.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp2.StatusCode())
 				resp3 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "Authorization",
 					Value: testV4PublicToken,
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp3.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp3.StatusCode())
 			},
 		},
 		{
@@ -569,17 +569,17 @@ func TestParseOption(t *testing.T) {
 					Key:   "Authorization",
 					Value: token1,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 				resp2 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "Authorization",
 					Value: token2,
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp2.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp2.StatusCode())
 				resp3 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "Authorization",
 					Value: testV4PublicToken,
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp3.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp3.StatusCode())
 			},
 		},
 		{
@@ -604,17 +604,17 @@ func TestParseOption(t *testing.T) {
 					Key:   "Authorization",
 					Value: token1,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 				resp2 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "Authorization",
 					Value: token2,
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp2.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp2.StatusCode())
 				resp3 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "Authorization",
 					Value: testV4PublicToken,
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp3.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp3.StatusCode())
 			},
 		},
 		{
@@ -642,17 +642,17 @@ func TestParseOption(t *testing.T) {
 					Key:   "Authorization",
 					Value: testV4PublicToken,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 				resp2 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "Authorization",
 					Value: expiredToken,
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp2.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp2.StatusCode())
 				resp3 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "Authorization",
 					Value: notInEffectToken,
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp3.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp3.StatusCode())
 			},
 		},
 		{
@@ -674,12 +674,12 @@ func TestParseOption(t *testing.T) {
 					Key:   "Authorization",
 					Value: testV4PublicToken,
 				}).Result()
-				assert.DeepEqual(t, http.StatusOK, resp1.StatusCode())
+				assert.DeepEqual(t, consts.StatusOK, resp1.StatusCode())
 				resp2 := ut.PerformRequest(engine, "POST", "/paseto", nil, ut.Header{
 					Key:   "Authorization",
 					Value: notInEffectToken,
 				}).Result()
-				assert.DeepEqual(t, http.StatusUnauthorized, resp2.StatusCode())
+				assert.DeepEqual(t, consts.StatusUnauthorized, resp2.StatusCode())
 			},
 		},
 	}
@@ -692,7 +692,7 @@ func TestParseOption(t *testing.T) {
 func setupEngine(path string, middleware app.HandlerFunc) *route.Engine {
 	engine := server.Default().Engine
 	engine.POST(path, middleware, func(ctx context.Context, c *app.RequestContext) {
-		c.String(http.StatusOK, "OK")
+		c.String(consts.StatusOK, "OK")
 	})
 	return engine
 }

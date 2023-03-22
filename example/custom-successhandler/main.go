@@ -19,7 +19,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"net/http"
+
 	"time"
 
 	gpaseto "aidanwoods.dev/go-paseto"
@@ -29,6 +29,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/common/utils"
 	"github.com/cloudwego/hertz/pkg/protocol"
+	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/hertz-contrib/paseto"
 )
 
@@ -64,7 +65,7 @@ func main() {
 	handler := func(ctx context.Context, c *app.RequestContext, token *gpaseto.Token) {
 		var answer string
 		if err := token.Get("secret1", &answer); err != nil {
-			c.String(http.StatusBadRequest, "you don't not the answer of secret1")
+			c.String(consts.StatusBadRequest, "you don't not the answer of secret1")
 			c.Abort()
 		}
 	}
@@ -82,7 +83,7 @@ func main() {
 		if err != nil {
 			hlog.Error("generate token failed")
 		}
-		ctx.String(http.StatusOK, token)
+		ctx.String(consts.StatusOK, token)
 	})
 
 	h.GET("/paseto/withnosecret", func(c context.Context, ctx *app.RequestContext) {
@@ -97,11 +98,11 @@ func main() {
 		if err != nil {
 			hlog.Error("generate token failed")
 		}
-		ctx.String(http.StatusOK, token)
+		ctx.String(consts.StatusOK, token)
 	})
 
 	h.POST("/paseto", paseto.New(paseto.WithSuccessHandler(handler)), func(c context.Context, ctx *app.RequestContext) {
-		ctx.String(http.StatusOK, "token is valid")
+		ctx.String(consts.StatusOK, "token is valid")
 	})
 
 	go performRequest()

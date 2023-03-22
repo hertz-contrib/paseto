@@ -19,7 +19,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/cloudwego/hertz/pkg/app"
@@ -27,6 +26,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/protocol"
+	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/hertz-contrib/paseto"
 )
 
@@ -60,11 +60,11 @@ func main() {
 		if err != nil {
 			hlog.Error("generate token failed")
 		}
-		ctx.String(http.StatusOK, token)
+		ctx.String(consts.StatusOK, token)
 	})
 
 	h.POST("/paseto", paseto.New(), func(c context.Context, ctx *app.RequestContext) {
-		ctx.String(http.StatusOK, "token is valid")
+		ctx.String(consts.StatusOK, "token is valid")
 	})
 
 	go performRequest()

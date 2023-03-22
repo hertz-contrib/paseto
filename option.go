@@ -18,11 +18,11 @@ package paseto
 
 import (
 	"context"
-	"net/http"
 
 	"aidanwoods.dev/go-paseto"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
 const (
@@ -88,7 +88,7 @@ var DefaultOptions = Options{
 	Next: nil,
 	ErrorHandler: func(ctx context.Context, c *app.RequestContext) {
 		hlog.Error("PASTO: ", c.Errors.Last())
-		c.String(http.StatusUnauthorized, "authorization failed")
+		c.String(consts.StatusUnauthorized, "authorization failed")
 		c.Abort()
 	},
 	SuccessHandler: func(ctx context.Context, c *app.RequestContext, token *paseto.Token) {
