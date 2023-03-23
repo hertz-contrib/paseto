@@ -19,7 +19,6 @@ package main
 import (
 	"context"
 	"fmt"
-
 	"time"
 
 	gpaseto "aidanwoods.dev/go-paseto"
