@@ -91,3 +91,12 @@ func main() {
 | KeyLookup      | `"header:Authorization"`                | KeyLookup is a string in the form of "<source>:<key>" that is used to create an Extractor that extracts the token from the request. |
 | TokenPrefix    | `""`                                    | TokenPrefix is a string that holds the prefix for the token lookup.                                                                 |
 | ParseFunc      | `parse V4 Public Token`                 | ParseFunc parse and verify token.                                                                                                   |
+
+## Version comparison
+
+| Version | Local                                                        | Public                          |
+| ------- | ------------------------------------------------------------ | ------------------------------- |
+| v1      | Encrypted with `AES-256-CBC` and signed with HMAC-SHA-256    | Signed with `RSA-SHA-256`       |
+| v2      | Encrypted with `XSalsa20Poly1305` and signed with `HMAC-SHA-384` | Signed with `EdDSA `(`Ed25519`) |
+| v3      | Encrypted with `XChaCha20Poly1305` and signed with` HMAC-SHA-384` | Signed with `EdDSA `(`Ed25519`) |
+| v4      | Encrypted with `XChaCha20Poly1305` and signed with `HMAC-SHA-512-256` | Signed with `EdDSA `(`Ed448`)   |
